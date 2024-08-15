@@ -1,30 +1,39 @@
 package br.com.marianaconsolaro;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.UUID;
 
+import java.util.Set;
+
+import org.jboss.resteasy.reactive.RestQuery;
+
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import java.util.Optional;
+
 
 @Path("/users")
 public class UserResource {
 
-    
-    private Set<User> users = Collections.synchronizedSet(new LinkedHashSet<>());
-    
+    @Inject
+    private UserService userService;
+
     @GET()
     public Set<User> getUsers() {
-        users.add(new User(UUID.randomUUID(), "Mariana"));
-        users.add(new User(UUID.randomUUID(), "Daniel"));
-        users.add(new User(UUID.randomUUID(), "Carol"));
-
-        return users;
-
+       
+        return this.userService.getUsers();
     }
 
-    record User(UUID id, String name){}
+    @GET
+    @Path("/findByName")
+    public Optional<User> getUserByName(@RestQuery String name) {
+        return this.userService.getUserByName(name);
+    }
 
-    
+    @GET
+    @Path("/findByParams/{name}")
+    public Optional<User> findByParams(String name) {
+        System.out.println("Nome " + name);
+        return this.userService.getUserByName(name);
+    }
+
 }
